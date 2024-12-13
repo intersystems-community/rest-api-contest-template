@@ -82,7 +82,7 @@ ClassMethod GetPerson(id As %Integer) As %Status
 
     Set person = ##class(Sample.Person).%OpenId(id)
 
-    If '$IsObject(person) Quit ..Http404()
+    If '$IsObject(person) Quit ..ReportHttpStatusCode()
 
     Do person.%JSONExport()
 
@@ -92,21 +92,22 @@ ClassMethod GetPerson(id As %Integer) As %Status
 /// Creates a new Sample.Person record
 ClassMethod CreatePerson() As %Status
 {
-	#dim tSC As %Status = $$$OK
+    #dim tSC As %Status = $$$OK
     #dim e As %Exception.AbstractException
+
     Set person = ##class(Sample.Person).%New()
-    Set data = {}.%FromJSON(%request.Content)
+    Set requestContent = %request.Content
+    Set requestContentStr = requestContent.%ToJSON()   
+    Set data = {}.%FromJSON(requestContentStr)
 
-
-    $$$TOE(tSC,person.%JSONImport(data))
-    $$$TOE(tSC,person.%Save())
+    $$$TOE(tSC, person.%JSONImport(data))
+    $$$TOE(tSC, person.%Save())
 
     Set %response.Status = 204
     Set %response.ContentType = ..#CONTENTTYPEJSON
-    //d data.%ToJSON()
     Do person.%JSONExport()
 
-    Quit tSC
+    QUIT tSC
 }
 
 /// Update a record in Sample.Person with id
@@ -115,9 +116,11 @@ ClassMethod UpdatePerson(id As %Integer) As %Status
 	#dim tSC As %Status = $$$OK
     #dim e As %Exception.AbstractException
     Set person = ##class(Sample.Person).%OpenId(id)
-    If '$IsObject(person) Return ..Http404()
-    Set data = {}.%FromJSON(%request.Content)
+    If '$IsObject(person) Return ..ReportHttpStatusCode()
 
+    Set requestContent = %request.Content
+    Set requestContentStr = requestContent.%ToJSON()  
+    Set data = {}.%FromJSON(requestContentStr)
 
     $$$TOE(tSC,person.%JSONImport(data))
     $$$TOE(tSC,person.%Save())
@@ -141,7 +144,6 @@ ClassMethod DeletePerson(id As %Integer) As %Status
     $$$TOE(tSC,person.%DeleteId(id))
 
     Set %response.Status = 200
-
     Set %response.ContentType = ..#CONTENTTYPEJSON
 
     Quit tSC
