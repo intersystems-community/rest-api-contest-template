@@ -10,10 +10,10 @@
       
       <Resource Name="Sample.PKG"/>
      
-       <CSPApplication 
+       <WebApplication 
         Url="/crud"
         Recurse="1"
-        MatchRoles=":{$dbrole}"
+        MatchRoles=":{$globalsDbRole}"
         PasswordAuthEnabled="0"
         UnauthenticatedEnabled="0"
         DispatchClass="Sample.PersonREST"
