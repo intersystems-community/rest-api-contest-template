@@ -1,0 +1,7 @@
+FROM intersystems/iris-community:latest-em
+USER root
+WORKDIR /opt/irisanvil
+COPY src /opt/irisanvil/src
+COPY web /usr/irissys/csp/anvil-ui
+RUN chown -R irisowner:irisowner /opt/irisanvil /usr/irissys/csp/anvil-ui
+USER irisowner

@@ -1,0 +1,14 @@
+zn "USER"
+do $SYSTEM.OBJ.Load("/opt/irisanvil/src/Anvil/REST.cls","ck")
+do $SYSTEM.OBJ.Load("/opt/irisanvil/src/Anvil/Public.cls","ck")
+zn "%SYS"
+set sc=##class(Security.Services).Get("%Service_WebGateway",.svc)
+set svc("AutheEnabled")=96
+set sc=##class(Security.Services).Modify("%Service_WebGateway",.svc)
+set sc=##class(Security.Users).Get("UnknownUser",.usr)
+set usr("Roles")="%DB_USER"
+set sc=##class(Security.Users).Modify("UnknownUser",.usr)
+if '##class(Security.Applications).Exists("/anvil") { kill app set app("DispatchClass")="",app("NameSpace")="USER",app("Enabled")=1,app("AutheEnabled")=64,app("ServeFiles")=1,app("Path")="/usr/irissys/csp/anvil-ui",app("MatchRoles")="" set sc=##class(Security.Applications).Create("/anvil",.app) } else { set sc=##class(Security.Applications).Get("/anvil",.app) set app("DispatchClass")="",app("NameSpace")="USER",app("Enabled")=1,app("AutheEnabled")=64,app("ServeFiles")=1,app("Path")="/usr/irissys/csp/anvil-ui",app("MatchRoles")="" set sc=##class(Security.Applications).Modify("/anvil",.app) }
+if '##class(Security.Applications).Exists("/anvil/api") { kill api set api("DispatchClass")="Anvil.Public",api("NameSpace")="USER",api("Enabled")=1,api("AutheEnabled")=64 set sc=##class(Security.Applications).Create("/anvil/api",.api) } else { set sc=##class(Security.Applications).Get("/anvil/api",.api) set api("DispatchClass")="Anvil.Public",api("NameSpace")="USER",api("Enabled")=1,api("AutheEnabled")=64 set sc=##class(Security.Applications).Modify("/anvil/api",.api) }
+if '##class(Security.Applications).Exists("/anvil/admin") { kill adm set adm("DispatchClass")="Anvil.REST",adm("NameSpace")="USER",adm("Enabled")=1,adm("AutheEnabled")=32 set sc=##class(Security.Applications).Create("/anvil/admin",.adm) } else { set sc=##class(Security.Applications).Get("/anvil/admin",.adm) set adm("DispatchClass")="Anvil.REST",adm("NameSpace")="USER",adm("Enabled")=1,adm("AutheEnabled")=32 set sc=##class(Security.Applications).Modify("/anvil/admin",.adm) }
+halt

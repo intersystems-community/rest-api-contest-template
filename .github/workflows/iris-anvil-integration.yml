@@ -1,0 +1,33 @@
+name: IRIS Anvil integration
+
+on:
+  push:
+    branches: [master, main, iris-anvil]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Start IRIS
+        run: docker compose -f docker-compose.anvil.yml up -d iris
+
+      - name: Verify reactor and security boundaries
+        run: |
+          chmod +x scripts/bootstrap.sh test/integration.sh
+          ./test/integration.sh
+
+      - name: Container diagnostics
+        if: failure()
+        run: |
+          docker compose -f docker-compose.anvil.yml ps -a
+          docker logs iris-anvil-iris --tail 200 || true
+
+      - name: Stop IRIS
+        if: always()
+        run: docker compose -f docker-compose.anvil.yml down -v

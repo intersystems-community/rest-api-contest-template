@@ -1,0 +1,30 @@
+services:
+  iris:
+    image: intersystems/iris-community:latest-em
+    container_name: iris-anvil-iris
+    command: --check-caps false
+    ports:
+      - "52773:52773"
+      - "1972:1972"
+    volumes:
+      - ./src:/opt/irisanvil/src:ro
+      - ./web:/usr/irissys/csp/anvil-ui:ro
+    networks:
+      - iris-anvil-net
+
+  sling:
+    image: apache/sling:14
+    container_name: iris-anvil-sling
+    ports:
+      - "8082:8080"
+    volumes:
+      - sling-oak:/opt/sling/launcher
+    networks:
+      - iris-anvil-net
+
+volumes:
+  sling-oak:
+
+networks:
+  iris-anvil-net:
+    name: iris-anvil-net

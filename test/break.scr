@@ -1,0 +1,11 @@
+zn "USER"
+set d=##class(Anvil.REST).Digest("iris-anvil/v1|SET_DEMO_FLAG|cockpit.banner|reviewed")
+set ^Anvil.Ledger(10)=$listbuild("PROPOSED","SET_DEMO_FLAG","cockpit.banner","reviewed",d,$horolog)
+set r=^Anvil.Ledger(10),v=##class(Anvil.REST).Digest("iris-anvil/v1|"_$list(r,2)_"|"_$list(r,3)_"|"_$list(r,4))
+write "baseline=",v=$list(r,5),!
+set r=$listbuild($list(r,1),$list(r,2),$list(r,3),"tampered",$list(r,5),$list(r,6))
+set ^Anvil.Ledger(10)=r
+set v=##class(Anvil.REST).Digest("iris-anvil/v1|"_$list(r,2)_"|"_$list(r,3)_"|"_$list(r,4))
+write "tamper_detected=",v'=$list(r,5),!
+write "missing=",$data(^Anvil.Ledger(999999)),!
+halt

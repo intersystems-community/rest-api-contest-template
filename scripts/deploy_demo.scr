@@ -1,0 +1,11 @@
+zn "%SYS"
+kill app
+set app("NameSpace")="USER"
+set app("DispatchClass")="Anvil.REST"
+set app("Enabled")=1
+set app("AutheEnabled")=64
+set exists=##class(Security.Applications).Exists("/anvil-demo")
+if exists set sc=##class(Security.Applications).Modify("/anvil-demo",.app)
+if 'exists set sc=##class(Security.Applications).Create("/anvil-demo",.app)
+write $system.Status.GetErrorText(sc),!
+halt
